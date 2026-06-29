@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
+
 const shopify = require("./services/shopify");
 
 const authRoutes = require("./routes/auth");
@@ -9,33 +11,65 @@ const webhookRoutes = require("./routes/webhooks");
 const apiRoutes = require("./routes/api");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// --- Shopify OAuth ---
+// -------------------------------
+// Shopify Authentication
+// -------------------------------
 app.use("/", authRoutes);
 
-// --- Webhooks (raw body handled internally by shopify lib) ---
+// -------------------------------
+// Shopify Webhooks
+// -------------------------------
 app.use("/api/webhooks", webhookRoutes);
 
-// --- Authenticated API routes (audit + fix) ---
+// -------------------------------
+// Protected API Routes
+// -------------------------------
 app.use("/api", apiRoutes);
 
-// --- Embedded app static UI ---
+// -------------------------------
+// Static Files
+// -------------------------------
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/*", shopify.ensureInstalledOnShop(), (req, res) => {
-    const fs = require("fs");
+// -------------------------------
+// Embedded App
+// -------------------------------
+app.get("/*", shopify.ensureInstalledOnShop(), (req, res) => {
     const html = fs
-        .readFileSync(path.join(__dirname, "public", "index.html"))
-        .toString()
+        .readFileSync(path.join(__dirname, "public", "index.html"), "utf8")
         .replace("%SHOPIFY_API_KEY%", process.env.SHOPIFY_API_KEY);
 
-    res.set("Content-Type", "text/html");
+    res.setHeader("Content-Type", "text/html");
     res.send(html);
 });
 
-app.listen(PORT, () => {
-    console.log(`CRO Audit app running on port ${PORT}`);
+// -------------------------------
+// Global Error Handler
+// -------------------------------
+app.use((err, req, res, next) => {
+    console.error("SERVER ERROR:");
+    console.error(err);
+
+    res.status(err.status || 500).json({
+        success: false,
+        error: err.message || "Internal Server Error",
+    });
 });
+
+// -------------------------------
+// Start Server
+// -------------------------------
+const PORT = process.env.PORT || 3000;
+
+if (process.env.VERCEL) {
+    module.exports = app;
+} else {
+    app.listen(PORT, () => {
+        console.log(`✅ CRO Audit App running on http://localhost:${PORT}`);
+    });
+}
