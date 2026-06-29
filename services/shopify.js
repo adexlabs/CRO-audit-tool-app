@@ -5,25 +5,30 @@ const { SQLiteSessionStorage } = require("@shopify/shopify-app-session-storage-s
 const { LATEST_API_VERSION } = require("@shopify/shopify-api");
 const path = require("path");
 
+// Define scopes
+const scopes = process.env.SHOPIFY_SCOPES
+  ? process.env.SHOPIFY_SCOPES.split(",")
+  : [];
+
 const shopify = shopifyApp({
-    api: {
-        apiKey: process.env.SHOPIFY_API_KEY,
-        apiSecretKey: process.env.SHOPIFY_API_SECRET,
-        scopes,
-        hostName: process.env.HOST,
-        apiVersion: LATEST_API_VERSION,
-        restResources: undefined
-    },
-    auth: {
-        path: "/api/auth",
-        callbackPath: "/api/auth/callback"
-    },
-    webhooks: {
-        path: "/api/webhooks"
-    },
-    sessionStorage: new SQLiteSessionStorage(
-        path.join(__dirname, "..", "db", "sessions.sqlite")
-    )
+  api: {
+    apiKey: process.env.SHOPIFY_API_KEY,
+    apiSecretKey: process.env.SHOPIFY_API_SECRET,
+    scopes: scopes,
+    hostName: process.env.HOST.replace(/^https?:\/\//, "").replace(/\/$/, ""),
+    apiVersion: LATEST_API_VERSION,
+    restResources: undefined,
+  },
+  auth: {
+    path: "/api/auth",
+    callbackPath: "/api/auth/callback",
+  },
+  webhooks: {
+    path: "/api/webhooks",
+  },
+  sessionStorage: new SQLiteSessionStorage(
+    path.join(__dirname, "..", "db", "sessions.sqlite")
+  ),
 });
 
 module.exports = shopify;
