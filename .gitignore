@@ -1,7 +1,5 @@
-node_modules
+node_modules/
 .env
 .vercel
-dist
-build
-coverage
-npm-debug.log
+*.log
+.DS_Store

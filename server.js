@@ -1,75 +1,43 @@
-require("dotenv").config();
-
-const express = require("express");
-const path = require("path");
-const fs = require("fs");
-
-const shopify = require("./services/shopify");
-
-const authRoutes = require("./routes/auth");
-const webhookRoutes = require("./routes/webhooks");
-const apiRoutes = require("./routes/api");
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
 
 const app = express();
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Capture raw body for Shopify webhook HMAC verification
+app.use(
+  express.json({
+    verify: (req, res, buf) => { req.rawBody = buf.toString(); }
+  })
+);
+app.use(cors());
+app.use(express.static(path.join(__dirname, 'frontend/public')));
 
-// -------------------------------
-// Shopify Authentication
-// -------------------------------
-app.use("/", authRoutes);
+// ---- Auth (Shopify OAuth install/callback) ----
+app.use('/auth', require('./api/auth'));
 
-// -------------------------------
-// Shopify Webhooks
-// -------------------------------
-app.use("/api/webhooks", webhookRoutes);
+// ---- API routes ----
+app.use('/api/audit', require('./api/audit'));
+app.use('/api/fix', require('./api/fix'));
+app.use('/api/dashboard', require('./api/dashboard'));
+app.use('/api/history', require('./api/history'));
+app.use('/api/reports', require('./api/reports'));
+app.use('/api/settings', require('./api/settings'));
+app.use('/api/themes', require('./api/themes'));
+app.use('/api/products', require('./api/products'));
+app.use('/api/pages', require('./api/pages'));
+app.use('/api/collections', require('./api/collections'));
+app.use('/webhooks', require('./api/webhooks'));
 
-// -------------------------------
-// Protected API Routes
-// -------------------------------
-app.use("/api", apiRoutes);
+app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
-// -------------------------------
-// Static Files
-// -------------------------------
-app.use(express.static(path.join(__dirname, "public")));
-
-// -------------------------------
-// Embedded App
-// -------------------------------
-app.get("/*", shopify.ensureInstalledOnShop(), (req, res) => {
-    const html = fs
-        .readFileSync(path.join(__dirname, "public", "index.html"), "utf8")
-        .replace("%SHOPIFY_API_KEY%", process.env.SHOPIFY_API_KEY);
-
-    res.setHeader("Content-Type", "text/html");
-    res.send(html);
+// Fallback to the dashboard SPA
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/public/index.html'));
 });
 
-// -------------------------------
-// Global Error Handler
-// -------------------------------
-app.use((err, req, res, next) => {
-    console.error("SERVER ERROR:");
-    console.error(err);
-
-    res.status(err.status || 500).json({
-        success: false,
-        error: err.message || "Internal Server Error",
-    });
-});
-
-// -------------------------------
-// Start Server
-// -------------------------------
 const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`CRO Audit app running on port ${PORT}`));
 
-if (process.env.VERCEL) {
-    module.exports = app;
-} else {
-    app.listen(PORT, () => {
-        console.log(`✅ CRO Audit App running on http://localhost:${PORT}`);
-    });
-}
+module.exports = app;

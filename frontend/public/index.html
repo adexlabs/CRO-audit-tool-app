@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CRO Audit — Conversion Diagnostics</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <div class="shell">
+    <aside class="rail">
+      <div class="rail-mark">CRO</div>
+      <nav class="rail-nav">
+        <button class="rail-btn active" data-view="dashboard" title="Dashboard">⌂</button>
+        <button class="rail-btn" data-view="history" title="History">↻</button>
+        <button class="rail-btn" data-view="settings" title="Settings">⚙</button>
+      </nav>
+    </aside>
+
+    <main class="stage">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Conversion diagnostics for</p>
+          <h1 id="shop-domain-label">your-store.myshopify.com</h1>
+        </div>
+        <div class="topbar-actions">
+          <select id="page-type-select">
+            <option value="homepage">Homepage</option>
+            <option value="product">Product page</option>
+            <option value="collection">Collection page</option>
+            <option value="cart">Cart page</option>
+          </select>
+          <input id="url-input" type="text" placeholder="https://your-store.myshopify.com/" />
+          <button id="run-audit-btn" class="btn-primary">Run audit</button>
+        </div>
+      </header>
+
+      <section id="view-dashboard" class="view active">
+
+        <div class="score-row">
+          <div class="score-dial" id="score-dial">
+            <span id="score-number">—</span>
+            <small>/ 100</small>
+          </div>
+          <div class="category-grid" id="category-grid"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Findings</h2>
+            <span class="panel-sub" id="issue-count-label">No audit run yet</span>
+          </div>
+          <div id="issues-list" class="issues-list">
+            <div class="empty-state">
+              <p>Enter a storefront URL above and run an audit to see conversion issues here.</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section id="view-history" class="view">
+        <div class="panel">
+          <div class="panel-head"><h2>Activity history</h2></div>
+          <div id="history-list" class="history-list"></div>
+        </div>
+      </section>
+
+      <section id="view-settings" class="view">
+        <div class="panel">
+          <div class="panel-head"><h2>Connection settings</h2></div>
+          <div class="settings-form">
+            <label>Shop domain
+              <input id="settings-shop-domain" type="text" placeholder="your-store.myshopify.com" />
+            </label>
+            <label>Admin access token
+              <input id="settings-access-token" type="password" placeholder="shpat_..." />
+            </label>
+            <button id="save-connection-btn" class="btn-primary">Save & connect</button>
+            <p class="hint">Stored once per browser. Used to authenticate audit and fix requests against your store.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
