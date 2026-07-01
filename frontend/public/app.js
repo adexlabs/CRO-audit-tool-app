@@ -23,7 +23,8 @@
   };
 
   async function loadSession() {
-    const res = await fetch("/api/session");
+    // const res = await fetch("/api/session");
+    const res = await fetch(`/api/session?shop=${encodeURIComponent(window.location.hostname)}`);
 
     if (!res.ok) {
       showToast("Unable to load Shopify session", true);
@@ -159,7 +160,7 @@
       const res = await fetch('/api/fix', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({issueId, auditId})
+        body: JSON.stringify({ issueId, auditId })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Fix failed');
