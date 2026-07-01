@@ -26,40 +26,38 @@
 
     const params = new URLSearchParams(window.location.search);
 
-    let shop = params.get("shop");
-
-    // Save shop after OAuth redirect
-    if (shop) {
-      localStorage.setItem("cro_shop_domain", shop);
-    } else {
-      // Later app launches
-      shop = localStorage.getItem("cro_shop_domain");
-    }
+    const shop = params.get("shop");
 
     if (!shop) {
-      showToast("Shop not found. Please reinstall the app.", true);
-      return;
+        showToast("Missing shop parameter", true);
+        return;
     }
 
-    state.shopDomain = shop;
-
     const res = await fetch(
-      `/api/session?shop=${encodeURIComponent(shop)}`
+        `/api/session?shop=${encodeURIComponent(shop)}`
     );
 
     if (!res.ok) {
-      const err = await res.json();
-      showToast(err.error, true);
-      return;
+
+        const err = await res.json();
+
+        showToast(err.error || "Unable to load Shopify session", true);
+
+        return;
+
     }
 
     const session = await res.json();
 
+    state.shopDomain = session.shop;
+
     el.shopLabel.textContent = session.shop;
+
     el.urlInput.value = `https://${session.shop}`;
 
     loadDashboard();
-  }
+
+}
 
   function init() {
 
