@@ -12,7 +12,12 @@ const { logEvent } = require('../services/database/history');
  * Runs a full CRO audit against a live page and persists it to Supabase.
  */
 router.post('/', async (req, res) => {
-  const { shopDomain, accessToken, url, pageType } = req.body;
+  const { url, pageType } = req.body;
+
+  const shopDomain = req.shop.shop_domain;
+
+  const accessToken = req.shop.access_token;
+
   if (!shopDomain || !url) {
     return res.status(400).json({ error: 'shopDomain and url are required' });
   }

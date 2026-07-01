@@ -5,7 +5,7 @@ const collections = require('../services/shopify/collections');
 
 router.get('/', async (req, res) => {
   try {
-    const shop = await getShopByDomain(req.query.shopDomain);
+    const shop = await getShopByDomain(req.query.shop_domain);
     if (!shop) return res.status(404).json({ error: 'Shop not found' });
     const list = await collections.list(shop.shop_domain, shop.access_token);
     res.json({ collections: list });

@@ -15,7 +15,11 @@ const { restoreFromBackup } = require('../services/shopify/restore');
  * to the Shopify theme, and stores the before/after in Supabase.
  */
 router.post('/', async (req, res) => {
-  const { shopDomain, issueId, auditId } = req.body;
+  const shopDomain = req.shop.shop_domain;
+
+  const accessToken = req.shop.access_token;
+
+  const { issueId, auditId } = req.body;
   if (!shopDomain || !issueId) {
     return res.status(400).json({ error: 'shopDomain and issueId are required' });
   }
@@ -55,7 +59,10 @@ router.post('/', async (req, res) => {
  * body: { shopDomain, backupId, themeId }
  */
 router.post('/rollback', async (req, res) => {
-  const { shopDomain, backupId, themeId } = req.body;
+  const shopDomain = req.shop.shop_domain;
+
+  const accessToken = req.shop.access_token;
+  const { backupId, themeId } = req.body;
   try {
     const shop = await getShopByDomain(shopDomain);
     if (!shop) return res.status(404).json({ error: 'Shop not found' });

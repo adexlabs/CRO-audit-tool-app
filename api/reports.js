@@ -17,10 +17,10 @@ router.get('/:auditId', async (req, res) => {
   }
 });
 
-// GET /api/reports?shopDomain=... -> list saved report records
+// GET /api/reports?shop_domain=... -> list saved report records
 router.get('/', async (req, res) => {
   try {
-    const shop = await getShopByDomain(req.query.shopDomain);
+    const shop = await getShopByDomain(req.query.shop_domain);
     if (!shop) return res.status(404).json({ error: 'Shop not found' });
     const reports = await listReportsForShop(shop.id);
     res.json({ reports });

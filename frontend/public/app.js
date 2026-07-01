@@ -1,7 +1,6 @@
 (function () {
   const state = {
-    shopDomain: localStorage.getItem('cro_shop_domain') || '',
-    accessToken: localStorage.getItem('cro_access_token') || '',
+    shopDomain: "",
     currentAudit: null
   };
 
@@ -23,21 +22,35 @@
     toast: document.getElementById('toast')
   };
 
-  function init() {
-    el.shopLabel.textContent = state.shopDomain || 'not connected';
-    el.settingsDomain.value = state.shopDomain;
-    el.settingsToken.value = state.accessToken;
-    if (state.shopDomain) {
-      el.urlInput.value = `https://${state.shopDomain}/`;
-      loadDashboard();
+  async function loadSession() {
+    const res = await fetch("/api/session");
+
+    if (!res.ok) {
+      showToast("Unable to load Shopify session", true);
+      return;
     }
 
-    document.querySelectorAll('.rail-btn').forEach((btn) => {
-      btn.addEventListener('click', () => switchView(btn.dataset.view));
+    const session = await res.json();
+
+    state.shopDomain = session.shop;
+
+    el.shopLabel.textContent = session.shop;
+
+    el.urlInput.value = `https://${session.shop}`;
+
+    loadDashboard();
+  }
+
+  function init() {
+
+    loadSession();
+
+    document.querySelectorAll(".rail-btn").forEach(btn => {
+      btn.addEventListener("click", () => switchView(btn.dataset.view));
     });
 
-    el.runBtn.addEventListener('click', runAudit);
-    el.saveConnectionBtn.addEventListener('click', saveConnection);
+    el.runBtn.addEventListener("click", runAudit);
+
   }
 
   function switchView(view) {
@@ -52,21 +65,6 @@
     el.toast.classList.toggle('error', !!isError);
     el.toast.classList.add('show');
     setTimeout(() => el.toast.classList.remove('show'), 3500);
-  }
-
-  function saveConnection() {
-    const domain = el.settingsDomain.value.trim();
-    const token = el.settingsToken.value.trim();
-    if (!domain) return showToast('Enter a shop domain', true);
-    localStorage.setItem('cro_shop_domain', domain);
-    localStorage.setItem('cro_access_token', token);
-    state.shopDomain = domain;
-    state.accessToken = token;
-    el.shopLabel.textContent = domain;
-    el.urlInput.value = `https://${domain}/`;
-    showToast('Connected. You can now run an audit.');
-    switchView('dashboard');
-    document.querySelector('[data-view="dashboard"]').classList.add('active');
   }
 
   // ---- Audit ----
@@ -84,8 +82,6 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          shopDomain: state.shopDomain,
-          accessToken: state.accessToken,
           url,
           pageType: el.pageTypeSelect.value
         })
@@ -149,9 +145,9 @@
         <div class="issue-actions">
           <span class="status-pill ${issue.status === 'fixed' ? 'fixed' : ''}" id="status-pill-${issue.id}">${issue.status}</span>
           ${issue.status === 'fixed'
-            ? ''
-            : `<button class="btn-ghost" id="fix-btn-${issue.id}" ${fixable ? '' : 'disabled title="No theme file mapped to this issue"'}>Fix with AI</button>`
-          }
+        ? ''
+        : `<button class="btn-ghost" id="fix-btn-${issue.id}" ${fixable ? '' : 'disabled title="No theme file mapped to this issue"'}>Fix with AI</button>`
+      }
         </div>
       </div>`;
   }
@@ -163,7 +159,7 @@
       const res = await fetch('/api/fix', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ shopDomain: state.shopDomain, issueId, auditId })
+        body: JSON.stringify({issueId, auditId})
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Fix failed');
@@ -182,7 +178,7 @@
   // ---- Dashboard / history ----
   async function loadDashboard() {
     try {
-      const res = await fetch(`/api/dashboard?shopDomain=${encodeURIComponent(state.shopDomain)}`);
+      const res = await fetch(`/api/dashboard?shop=${encodeURIComponent(state.shopDomain)}`)
       if (!res.ok) return;
       const data = await res.json();
       if (data.latestAudit) {
@@ -196,7 +192,7 @@
   async function loadHistory() {
     if (!state.shopDomain) { el.historyList.innerHTML = `<div class="empty-state">Connect a shop first.</div>`; return; }
     try {
-      const res = await fetch(`/api/history?shopDomain=${encodeURIComponent(state.shopDomain)}`);
+      const res = await fetch(`/api/history?shop=${encodeURIComponent(state.shopDomain)}`)
       const data = await res.json();
       const items = data.history || [];
       el.historyList.innerHTML = items.length
