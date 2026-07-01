@@ -23,20 +23,39 @@
   };
 
   async function loadSession() {
-    // const res = await fetch("/api/session");
-    const res = await fetch(`/api/session?shop=${encodeURIComponent(window.location.hostname)}`);
+
+    const params = new URLSearchParams(window.location.search);
+
+    let shop = params.get("shop");
+
+    // Save shop after OAuth redirect
+    if (shop) {
+      localStorage.setItem("cro_shop_domain", shop);
+    } else {
+      // Later app launches
+      shop = localStorage.getItem("cro_shop_domain");
+    }
+
+    if (!shop) {
+      showToast("Shop not found. Please reinstall the app.", true);
+      return;
+    }
+
+    state.shopDomain = shop;
+
+    const res = await fetch(
+      `/api/session?shop=${encodeURIComponent(shop)}`
+    );
 
     if (!res.ok) {
-      showToast("Unable to load Shopify session", true);
+      const err = await res.json();
+      showToast(err.error, true);
       return;
     }
 
     const session = await res.json();
 
-    state.shopDomain = session.shop;
-
     el.shopLabel.textContent = session.shop;
-
     el.urlInput.value = `https://${session.shop}`;
 
     loadDashboard();
