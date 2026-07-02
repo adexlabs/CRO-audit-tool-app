@@ -26,7 +26,9 @@ router.post('/', async (req, res) => {
     const shop = await getOrCreateShop(shopDomain, accessToken);
     auditRecord = await createAudit({ shopId: shop.id, targetType: pageType || 'homepage', targetUrl: url });
 
-    // const result = await runAudit({ url, pageType: pageType || 'homepage' });
+    const result = await runWebsiteAudit({
+      url
+    });
 
     let result;
 

@@ -8,7 +8,6 @@
   const el = {
     shopLabel: document.getElementById('shop-domain-label'),
     urlInput: document.getElementById('url-input'),
-    // pageTypeSelect: document.getElementById('page-type-select'),
     runBtn: document.getElementById('run-audit-btn'),
     scoreDial: document.getElementById('score-dial'),
     scoreNumber: document.getElementById('score-number'),
@@ -67,6 +66,24 @@
 
   }
 
+  window.toggleIssueDetails = function (id) {
+
+    const details = document.getElementById(`issue-details-${id}`);
+    const button = document.querySelector(`.issue-toggle[data-id="${id}"]`);
+
+    if (!details || !button) return;
+
+    const open = details.style.display === "block";
+
+    details.style.display = open ? "none" : "block";
+
+    button.querySelector(".toggle-text").textContent =
+      open ? "More Details" : "Hide Details";
+
+    button.querySelector(".toggle-icon").textContent =
+      open ? "▼" : "▲";
+  };
+
   function init() {
 
     loadSession();
@@ -108,8 +125,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          url,
-          pageType: el.pageTypeSelect.value
+          url
         })
       });
       const data = await res.json();
@@ -310,14 +326,15 @@
     </span>
 
     <div class="issue-actions">
-
         <button
-            class="btn-secondary issue-toggle-btn"
-            onclick="toggleIssueDetails('${issue.id}')">
+          class="issue-toggle"
+          data-id="${issue.id}"
+          onclick="window.toggleIssueDetails('${issue.id}')">
 
-            More Details
+          <span class="toggle-text">More Details</span>
+          <span class="toggle-icon">▼</span>
 
-        </button>
+      </button>
 
         <span
             class="status-pill ${issue.status === "fixed"

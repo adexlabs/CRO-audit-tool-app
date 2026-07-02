@@ -517,6 +517,30 @@ input:focus, select:focus { border-color: var(--accent); }
 
 }
 
+
+.issue-toggle{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 14px;
+    background:#fff;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    transition:all .2s ease;
+}
+
+.issue-toggle:hover{
+    background:#f3f4f6;
+}
+
+.toggle-icon{
+    font-size:12px;
+    transition:transform .2s ease;
+}
+
 @media (max-width: 720px) {
   .rail { display: none; }
   .stage { padding: 24px 18px 50px; }
