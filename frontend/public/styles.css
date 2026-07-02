@@ -236,10 +236,10 @@ input:focus, select:focus { border-color: var(--accent); }
   flex-shrink: 0;
   margin-top: 2px;
 }
-/* .severity-critical { background: rgba(255,93,93,0.15); color: var(--critical); } 
+.severity-critical { background: rgba(255,93,93,0.15); color: var(--critical); } 
 .severity-high { background: rgba(255,157,77,0.15); color: var(--high); }
 .severity-medium { background: rgba(255,206,77,0.15); color: var(--medium); }
-.severity-low { background: rgba(111,207,151,0.15); color: var(--low); }*/
+.severity-low { background: rgba(111,207,151,0.15); color: var(--low); }
 
 .issue-body { flex: 1; min-width: 0; }
 /* .issue-title { font-weight: 600; font-size: 14px; margin: 0 0 4px; } */
