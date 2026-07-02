@@ -292,35 +292,40 @@
 
     <div class="issue-footer">
 
-    <div class="issue-actions">
+    <div class="issue-left">
+
         <button
-          class="issue-toggle"
-          data-id="${issue.id}"
-          onclick="window.toggleIssueDetails('${issue.id}')">
+            class="issue-toggle"
+            data-id="${issue.id}"
+            onclick="window.toggleIssueDetails('${issue.id}')">
 
-          <span class="toggle-text">More Details</span>
-          <span class="toggle-icon">▼</span>
+            <span class="toggle-text">More Details</span>
+            <span class="toggle-icon">▼</span>
 
-      </button>
-
-        ${issue.status === "fixed"
-        ? ""
-        : `
-            <button
-                class="btn-primary"
-                id="fix-btn-${issue.id}"
-                ${fixable
-          ? ""
-          : "disabled"
-        }>
-                Fix with AI
-            </button>
-            `
-      }
+        </button>
 
     </div>
 
-  </div>
+    <div class="issue-right">
+
+        ${
+          issue.status === "fixed"
+            ? `
+            <span class="status-pill fixed">Fixed</span>
+            `
+            : `
+            <button
+                class="btn-primary"
+                id="fix-btn-${issue.id}"
+                ${fixable ? "" : "disabled"}>
+                Fix with AI
+            </button>
+            `
+        }
+
+    </div>
+
+</div>
 
 </div>
 

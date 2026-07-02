@@ -400,18 +400,6 @@ input:focus, select:focus { border-color: var(--accent); }
 
 }
 
-.issue-footer{
-
-    margin-top:20px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-}
-
 .btn-primary{
 
     background:#2563eb;
@@ -486,6 +474,52 @@ input:focus, select:focus { border-color: var(--accent); }
     transition:transform .2s ease;
 }
 
+.issue-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:20px;
+
+    width:100%;
+
+}
+
+.issue-left{
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+.issue-right{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+}
+
+@media (max-width:768px){
+
+    .issue-footer{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:12px;
+
+    }
+
+}
+
 @media (max-width: 720px) {
   .rail { display: none; }
   .stage { padding: 24px 18px 50px; }
@@ -517,16 +551,6 @@ gap:10px;
 .issue-metrics{
 
 grid-template-columns:1fr;
-
-}
-
-.issue-footer{
-
-flex-direction:column;
-
-align-items:flex-start;
-
-gap:15px;
 
 }
 
