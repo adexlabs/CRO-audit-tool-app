@@ -1,4 +1,3 @@
-/** Lightweight CSS inspection — flags obvious render-blocking / bloat issues */
 function analyzeCssLinks($) {
   const links = $('link[rel="stylesheet"]').map((_, el) => $(el).attr('href')).get();
   return {

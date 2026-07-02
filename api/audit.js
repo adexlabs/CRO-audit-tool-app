@@ -7,15 +7,14 @@ const { createAudit, completeAudit, failAudit, insertIssues, getAudit } = requir
 const { logEvent } = require('../services/database/history');
 
 /**
- * POST /api/audit
- * body: { shopDomain, accessToken, url, pageType }
+ * POST /api/audit?shop=...
+ * body: { url, pageType }
  * Runs a full CRO audit against a live page and persists it to Supabase.
  */
 router.post('/', async (req, res) => {
   const { url, pageType } = req.body;
 
   const shopDomain = req.shop.shop_domain;
-
   const accessToken = req.shop.access_token;
 
   if (!shopDomain || !url) {
@@ -56,10 +55,13 @@ router.post('/', async (req, res) => {
   }
 });
 
-/** GET /api/audit/:id */
+/** GET /api/audit/:id?shop=... */
 router.get('/:id', async (req, res) => {
   try {
     const audit = await getAudit(req.params.id);
+    if (!audit || audit.shop_id !== req.shop.id) {
+      return res.status(404).json({ error: 'Audit not found' });
+    }
     res.json({ audit });
   } catch (err) {
     res.status(404).json({ error: 'Audit not found' });

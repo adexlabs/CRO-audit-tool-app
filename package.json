@@ -3,26 +3,21 @@
   "version": "1.0.0",
   "description": "Shopify CRO Audit App with AI-powered auto-fix (Claude + Supabase)",
   "main": "server.js",
+  "engines": {
+    "node": ">=18.x"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.0",
-    "@shopify/admin-api-client": "^1.1.2",
-    "@shopify/app-bridge": "^3.7.11",
-    "@shopify/app-bridge-react": "^4.2.11",
-    "@shopify/shopify-api": "^13.1.0",
     "@supabase/supabase-js": "^2.45.4",
     "axios": "^1.18.1",
     "cheerio": "^1.0.0",
-    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
-    "jsonwebtoken": "^9.0.3",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
     "uuid": "^9.0.1"
   }
 }

@@ -1,8 +1,5 @@
 const cheerio = require('cheerio');
 
-/**
- * Parses raw HTML into the structured shape every audit module consumes.
- */
 function parseHtml(html) {
   const $ = cheerio.load(html);
 
@@ -27,7 +24,7 @@ function parseHtml(html) {
     scripts: $('script[src]').map((_, el) => $(el).attr('src')).get(),
     hasViewportMeta: $('meta[name="viewport"]').length > 0,
     bodyTextLength: $('body').text().replace(/\s+/g, ' ').trim().length,
-    rawHtmlSnippet: html.slice(0, 8000) // truncated for AI prompt size
+    rawHtmlSnippet: html.slice(0, 8000)
   };
 }
 

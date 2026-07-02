@@ -26,28 +26,23 @@ async function applyAiFix({ shopDomain, accessToken, shopId, auditId, issue }) {
     throw new Error('This issue has no associated theme file and cannot be auto-fixed.');
   }
 
-  // 1. Backup current live code
   const { backup, originalContent } = await backupAssetBeforeFix({
     shopDomain, accessToken, themeId: theme.id, fileKey, shopId
   });
 
-  // 2. Ask Claude for a fix
   const aiResult = await generateFix({
     issue,
     fileKey,
     currentCode: originalContent
   });
 
-  // 3. Validate before pushing anything live
   const validation = validateCode(aiResult.fixedCode, fileKey);
   if (!validation.valid) {
     throw new Error('AI fix failed validation: ' + validation.reason);
   }
 
-  // 4. Push live
   await updateAsset(shopDomain, accessToken, theme.id, fileKey, aiResult.fixedCode);
 
-  // 5. Persist fix + update issue status
   const savedFix = await saveFix({
     shopId,
     auditId,

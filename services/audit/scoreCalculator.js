@@ -1,11 +1,6 @@
 const SEVERITY_WEIGHTS = { critical: 25, high: 15, medium: 8, low: 3 };
 const CATEGORIES = ['seo', 'performance', 'accessibility', 'trust', 'mobile', 'ui', 'cart'];
 
-/**
- * Converts a flat list of issues into:
- *  - overallScore (0-100)
- *  - categoryScores { seo: 0-100, performance: 0-100, ... }
- */
 function calculateScores(issues) {
   const categoryDeductions = {};
   CATEGORIES.forEach((c) => (categoryDeductions[c] = 0));

@@ -1,8 +1,3 @@
-/**
- * Very small Liquid utility — used when we already have a theme file's raw
- * source (from services/shopify/assets.js) and need to locate things like
- * the <img> tags or schema block without a full Liquid AST parser.
- */
 function findLiquidImageTags(source) {
   const matches = [...source.matchAll(/<img[^>]*>/gi)];
   return matches.map((m) => m[0]);

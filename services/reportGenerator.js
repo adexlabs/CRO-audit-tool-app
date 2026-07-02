@@ -1,4 +1,3 @@
-/** Generates a simple, brandable HTML audit report (can be printed to PDF client-side) */
 function generateHtmlReport(audit) {
   const issuesHtml = (audit.audit_issues || [])
     .map(

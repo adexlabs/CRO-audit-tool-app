@@ -1,14 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { getShopByDomain } = require('../services/database/shops');
 const { getAudit } = require('../services/database/audits');
-const { saveReport, listReportsForShop } = require('../services/database/reports');
+const { listReportsForShop } = require('../services/database/reports');
 const { generateHtmlReport } = require('../services/reportGenerator');
 
-// GET /api/reports/:auditId -> returns rendered HTML report
+// GET /api/reports/:auditId?shop=... -> returns rendered HTML report
 router.get('/:auditId', async (req, res) => {
   try {
     const audit = await getAudit(req.params.auditId);
+    // Ownership check: don't let one shop view another shop's report.
+    if (!audit || audit.shop_id !== req.shop.id) {
+      return res.status(404).json({ error: 'Audit not found' });
+    }
     const html = generateHtmlReport(audit);
     res.setHeader('Content-Type', 'text/html');
     res.send(html);
@@ -17,12 +20,10 @@ router.get('/:auditId', async (req, res) => {
   }
 });
 
-// GET /api/reports?shop_domain=... -> list saved report records
+// GET /api/reports?shop=... -> list saved report records
 router.get('/', async (req, res) => {
   try {
-    const shop = await getShopByDomain(req.query.shop_domain);
-    if (!shop) return res.status(404).json({ error: 'Shop not found' });
-    const reports = await listReportsForShop(shop.id);
+    const reports = await listReportsForShop(req.shop.id);
     res.json({ reports });
   } catch (err) {
     res.status(500).json({ error: err.message });

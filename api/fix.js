@@ -2,32 +2,26 @@ const express = require('express');
 const router = express.Router();
 
 const supabase = require('../services/database/supabase');
-const { getShopByDomain } = require('../services/database/shops');
 const { applyAiFix } = require('../services/shopify/aiFix');
 const { restoreFromBackup } = require('../services/shopify/restore');
 
 /**
- * POST /api/fix
- * body: { shopDomain, issueId, auditId }
+ * POST /api/fix?shop=...
+ * body: { issueId, auditId }
  *
  * This is what the "Fix with AI" button calls. It loads the issue, asks
  * Claude to generate a corrected theme file, validates it, pushes it live
  * to the Shopify theme, and stores the before/after in Supabase.
  */
 router.post('/', async (req, res) => {
-  const shopDomain = req.shop.shop_domain;
-
-  const accessToken = req.shop.access_token;
-
+  const shop = req.shop;
   const { issueId, auditId } = req.body;
-  if (!shopDomain || !issueId) {
-    return res.status(400).json({ error: 'shopDomain and issueId are required' });
+
+  if (!issueId) {
+    return res.status(400).json({ error: 'issueId is required' });
   }
 
   try {
-    const shop = await getShopByDomain(shopDomain);
-    if (!shop) return res.status(404).json({ error: 'Shop not found. Install the app first.' });
-
     const { data: issue, error } = await supabase
       .from('audit_issues')
       .select('*')
@@ -55,18 +49,13 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * POST /api/fix/rollback
- * body: { shopDomain, backupId, themeId }
+ * POST /api/fix/rollback?shop=...
+ * body: { backupId, themeId }
  */
 router.post('/rollback', async (req, res) => {
-  const shopDomain = req.shop.shop_domain;
-
-  const accessToken = req.shop.access_token;
+  const shop = req.shop;
   const { backupId, themeId } = req.body;
   try {
-    const shop = await getShopByDomain(shopDomain);
-    if (!shop) return res.status(404).json({ error: 'Shop not found' });
-
     const restored = await restoreFromBackup({
       shopDomain: shop.shop_domain,
       accessToken: shop.access_token,

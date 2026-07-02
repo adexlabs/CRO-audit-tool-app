@@ -14,10 +14,6 @@ const AUDITORS = {
   cart: auditCart
 };
 
-/**
- * Runs a full CRO audit against a live storefront URL.
- * pageType: homepage | product | collection | cart
- */
 async function runAudit({ url, pageType = 'homepage', fileTargetMap = {} }) {
   const html = await fetchPageHtml(url);
   const parsed = parseHtml(html);
@@ -25,9 +21,6 @@ async function runAudit({ url, pageType = 'homepage', fileTargetMap = {} }) {
   const auditorFn = AUDITORS[pageType] || auditHomepage;
   let issues = auditorFn(parsed);
 
-  // Attach a best-guess theme file target for each issue category, so
-  // "Fix with AI" knows which Liquid/CSS file to edit. The caller can pass
-  // a real map (built from listAssets) to override these guesses.
   const defaultFileTargets = {
     seo: 'layout/theme.liquid',
     performance: 'layout/theme.liquid',

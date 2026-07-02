@@ -1,14 +1,8 @@
-/**
- * Cheap, fast sanity checks before we push AI-generated code to a live
- * storefront. This is NOT a full Liquid parser — it's a safety net to catch
- * obviously broken output (truncation, mismatched tags, accidental wipes).
- */
 function validateCode(code, fileKey) {
   if (!code || typeof code !== 'string' || code.trim().length === 0) {
     return { valid: false, reason: 'Empty code returned by AI' };
   }
 
-  // Guard against the AI nuking 90%+ of the file by accident
   if (code.length < 20) {
     return { valid: false, reason: 'Suspiciously short output' };
   }

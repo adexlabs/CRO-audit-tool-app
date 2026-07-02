@@ -1,6 +1,5 @@
 const { getRestClient } = require('./client');
 
-/** Returns the currently published (live) theme for the shop */
 async function getActiveTheme(shopDomain, accessToken) {
   const client = getRestClient(shopDomain, accessToken);
   const { data } = await client.get('/themes.json');

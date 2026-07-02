@@ -22,6 +22,14 @@
     toast: document.getElementById('toast')
   };
 
+  // Every protected API route requires the shop to be identified via a
+  // ?shop= query param (see middleware/shopifyAuth.js). This helper makes
+  // sure we never forget it on an authenticated call.
+  function shopUrl(path) {
+    const separator = path.includes('?') ? '&' : '?';
+    return `${path}${separator}shop=${encodeURIComponent(state.shopDomain)}`;
+  }
+
   async function loadSession() {
 
     const params = new URLSearchParams(window.location.search);
@@ -96,7 +104,7 @@
     el.issuesList.innerHTML = `<div class="empty-state">Scanning page and analyzing conversion factors…</div>`;
 
     try {
-      const res = await fetch('/api/audit', {
+      const res = await fetch(shopUrl('/api/audit'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -174,7 +182,7 @@
     btn.disabled = true;
     btn.textContent = 'Fixing…';
     try {
-      const res = await fetch('/api/fix', {
+      const res = await fetch(shopUrl('/api/fix'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ issueId, auditId })
@@ -196,7 +204,7 @@
   // ---- Dashboard / history ----
   async function loadDashboard() {
     try {
-      const res = await fetch(`/api/dashboard?shop=${encodeURIComponent(state.shopDomain)}`)
+      const res = await fetch(shopUrl('/api/dashboard'));
       if (!res.ok) return;
       const data = await res.json();
       if (data.latestAudit) {
@@ -210,7 +218,7 @@
   async function loadHistory() {
     if (!state.shopDomain) { el.historyList.innerHTML = `<div class="empty-state">Connect a shop first.</div>`; return; }
     try {
-      const res = await fetch(`/api/history?shop=${encodeURIComponent(state.shopDomain)}`)
+      const res = await fetch(shopUrl('/api/history'));
       const data = await res.json();
       const items = data.history || [];
       el.historyList.innerHTML = items.length
