@@ -8,7 +8,7 @@
   const el = {
     shopLabel: document.getElementById('shop-domain-label'),
     urlInput: document.getElementById('url-input'),
-    pageTypeSelect: document.getElementById('page-type-select'),
+    // pageTypeSelect: document.getElementById('page-type-select'),
     runBtn: document.getElementById('run-audit-btn'),
     scoreDial: document.getElementById('score-dial'),
     scoreNumber: document.getElementById('score-number'),
@@ -224,6 +224,8 @@
 
     </p>
 
+    <div class="issue-details" id="issue-details-${issue.id}" style="display:none;">
+
     <div class="issue-section">
 
         <h4>Why this matters</h4>
@@ -295,56 +297,27 @@
         </p>
 
     </div>
-
-    <div class="issue-metrics">
-
-        <div>
-
-            <strong>Difficulty</strong>
-
-            <span>${difficulty}</span>
-
-        </div>
-
-        <div>
-
-            <strong>Estimated Time</strong>
-
-            <span>${fixTime}</span>
-
-        </div>
-
-        <div>
-
-            <strong>Conversion Uplift</strong>
-
-            <span>${uplift}</span>
-
-        </div>
-
-        <div>
-
-            <strong>Revenue Impact</strong>
-
-            <span>${revenue}</span>
-
-        </div>
-
     </div>
 
     <div class="issue-footer">
 
-        <span class="issue-meta">
-
-            ${escapeHtml(issue.category)}
-
-            ${issue.file_target
+    <span class="issue-meta">
+        ${escapeHtml(issue.category)}
+        ${issue.file_target
         ? " • " + escapeHtml(issue.file_target)
-        : ""}
+        : ""
+      }
+    </span>
 
-        </span>
+    <div class="issue-actions">
 
-        <div>
+        <button
+            class="btn-secondary issue-toggle-btn"
+            onclick="toggleIssueDetails('${issue.id}')">
+
+            More Details
+
+        </button>
 
         <span
             class="status-pill ${issue.status === "fixed"
@@ -358,23 +331,23 @@
         </span>
 
         ${issue.status === "fixed"
-
         ? ""
-
-        : `<button
-                  class="btn-primary"
-                  id="fix-btn-${issue.id}"
-                  ${fixable
+        : `
+            <button
+                class="btn-primary"
+                id="fix-btn-${issue.id}"
+                ${fixable
           ? ""
           : "disabled"
         }>
-                    Fix with AI
-               </button>`
+                Fix with AI
+            </button>
+            `
       }
 
-        </div>
-
     </div>
+
+  </div>
 
 </div>
 
