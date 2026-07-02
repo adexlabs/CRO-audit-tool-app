@@ -182,16 +182,6 @@
 
     const confidence = issue.confidence || 90;
 
-    const difficulty = issue.difficulty || "Medium";
-
-    const fixTime = issue.estimated_fix_time || "15 mins";
-
-    const uplift =
-      issue.estimated_conversion_uplift || "Unknown";
-
-    const revenue =
-      issue.estimated_revenue_impact || "Unknown";
-
     const fixable = !!issue.file_target;
 
     return `

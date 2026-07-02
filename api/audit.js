@@ -26,10 +26,6 @@ router.post('/', async (req, res) => {
     const shop = await getOrCreateShop(shopDomain, accessToken);
     auditRecord = await createAudit({ shopId: shop.id, targetType: pageType || 'homepage', targetUrl: url });
 
-    const result = await runWebsiteAudit({
-      url
-    });
-
     let result;
 
     if (pageType === "website") {
@@ -83,24 +79,6 @@ router.post('/', async (req, res) => {
         recommendation: issue.recommendation,
 
         expected_improvement: issue.expected_improvement,
-
-        estimated_conversion_uplift:
-          issue.estimated_conversion_uplift,
-
-        estimated_revenue_impact:
-          issue.estimated_revenue_impact,
-
-        difficulty:
-          issue.difficulty,
-
-        estimated_fix_time:
-          issue.estimated_fix_time,
-
-        confidence:
-          issue.confidence,
-
-        element_selector:
-          issue.element_selector || null,
 
         file_target:
           issue.file_target,

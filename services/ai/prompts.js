@@ -140,14 +140,6 @@ For EVERY issue return the following JSON.
 
 "expected_improvement":"Expected improvement after fixing.",
 
-"estimated_conversion_uplift":"Example: 3-8%",
-
-"estimated_revenue_impact":"Low | Medium | High",
-
-"difficulty":"Easy | Medium | Hard",
-
-"estimated_fix_time":"5 min | 30 min | 2 hours",
-
 "confidence":95,
 
 "element_selector":"CSS selector",
@@ -252,14 +244,6 @@ Business Impact
 Recommendation
 
 Expected Improvement
-
-Estimated Conversion Uplift
-
-Estimated Revenue Impact
-
-Difficulty
-
-Estimated Fix Time
 
 Confidence Score
 

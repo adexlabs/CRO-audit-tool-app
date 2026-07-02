@@ -134,21 +134,9 @@ function normalizeIssue(issue) {
       issue.expected_improvement ||
       "",
 
-    estimated_conversion_uplift:
-      issue.estimated_conversion_uplift ||
+    current_snippet:
+      issue.current_snippet ||
       "",
-
-    estimated_revenue_impact:
-      issue.estimated_revenue_impact ||
-      "",
-
-    difficulty:
-      issue.difficulty ||
-      "Medium",
-
-    estimated_fix_time:
-      issue.estimated_fix_time ||
-      "15 mins",
 
     confidence:
       Number(issue.confidence) || 85,
