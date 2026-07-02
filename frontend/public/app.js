@@ -37,21 +37,21 @@
     const shop = params.get("shop");
 
     if (!shop) {
-        showToast("Missing shop parameter", true);
-        return;
+      showToast("Missing shop parameter", true);
+      return;
     }
 
     const res = await fetch(
-        `/api/session?shop=${encodeURIComponent(shop)}`
+      `/api/session?shop=${encodeURIComponent(shop)}`
     );
 
     if (!res.ok) {
 
-        const err = await res.json();
+      const err = await res.json();
 
-        showToast(err.error || "Unable to load Shopify session", true);
+      showToast(err.error || "Unable to load Shopify session", true);
 
-        return;
+      return;
 
     }
 
@@ -65,7 +65,7 @@
 
     loadDashboard();
 
-}
+  }
 
   function init() {
 
@@ -159,23 +159,227 @@
   }
 
   function issueRowHtml(auditId, issue) {
+
+    const severity = (issue.severity || "medium").toLowerCase();
+
+    const priority = issue.priority || severity;
+
+    const confidence = issue.confidence || 90;
+
+    const difficulty = issue.difficulty || "Medium";
+
+    const fixTime = issue.estimated_fix_time || "15 mins";
+
+    const uplift =
+      issue.estimated_conversion_uplift || "Unknown";
+
+    const revenue =
+      issue.estimated_revenue_impact || "Unknown";
+
     const fixable = !!issue.file_target;
+
     return `
-      <div class="issue-row" id="issue-row-${issue.id}">
-        <span class="severity-tag severity-${issue.severity}">${issue.severity}</span>
-        <div class="issue-body">
-          <p class="issue-title">${escapeHtml(issue.title)}</p>
-          <p class="issue-desc">${escapeHtml(issue.description || '')}</p>
-          <span class="issue-meta">${issue.category}${issue.file_target ? ' · ' + issue.file_target : ''}</span>
+
+<div class="issue-card severity-${severity}" id="issue-row-${issue.id}">
+
+    <div class="issue-header">
+
+        <div>
+
+            <span class="severity-tag severity-${severity}">
+                ${severity.toUpperCase()}
+            </span>
+
+            <span class="priority-tag">
+                ${priority}
+            </span>
+
         </div>
-        <div class="issue-actions">
-          <span class="status-pill ${issue.status === 'fixed' ? 'fixed' : ''}" id="status-pill-${issue.id}">${issue.status}</span>
-          ${issue.status === 'fixed'
-        ? ''
-        : `<button class="btn-ghost" id="fix-btn-${issue.id}" ${fixable ? '' : 'disabled title="No theme file mapped to this issue"'}>Fix with AI</button>`
+
+        <div>
+
+            <span class="confidence-pill">
+
+                ${confidence}% Confidence
+
+            </span>
+
+        </div>
+
+    </div>
+
+    <h3 class="issue-title">
+
+        ${escapeHtml(issue.title)}
+
+    </h3>
+
+    <p class="issue-summary">
+
+        ${escapeHtml(
+      issue.summary ||
+      issue.description ||
+      ""
+    )}
+
+    </p>
+
+    <div class="issue-section">
+
+        <h4>Why this matters</h4>
+
+        <p>
+
+        ${escapeHtml(
+
+      issue.why_it_matters ||
+
+      "This issue may negatively impact conversions."
+
+    )}
+
+        </p>
+
+    </div>
+
+    <div class="issue-section">
+
+        <h4>Business Impact</h4>
+
+        <p>
+
+        ${escapeHtml(
+
+      issue.business_impact ||
+
+      "Potential impact on sales and user trust."
+
+    )}
+
+        </p>
+
+    </div>
+
+    <div class="issue-section">
+
+        <h4>Recommendation</h4>
+
+        <p>
+
+        ${escapeHtml(
+
+      issue.recommendation ||
+
+      "Follow CRO best practices."
+
+    )}
+
+        </p>
+
+    </div>
+
+    <div class="issue-section">
+
+        <h4>Expected Improvement</h4>
+
+        <p>
+
+        ${escapeHtml(
+
+      issue.expected_improvement ||
+
+      "Improved usability and conversions."
+
+    )}
+
+        </p>
+
+    </div>
+
+    <div class="issue-metrics">
+
+        <div>
+
+            <strong>Difficulty</strong>
+
+            <span>${difficulty}</span>
+
+        </div>
+
+        <div>
+
+            <strong>Estimated Time</strong>
+
+            <span>${fixTime}</span>
+
+        </div>
+
+        <div>
+
+            <strong>Conversion Uplift</strong>
+
+            <span>${uplift}</span>
+
+        </div>
+
+        <div>
+
+            <strong>Revenue Impact</strong>
+
+            <span>${revenue}</span>
+
+        </div>
+
+    </div>
+
+    <div class="issue-footer">
+
+        <span class="issue-meta">
+
+            ${escapeHtml(issue.category)}
+
+            ${issue.file_target
+        ? " • " + escapeHtml(issue.file_target)
+        : ""}
+
+        </span>
+
+        <div>
+
+        <span
+            class="status-pill ${issue.status === "fixed"
+        ? "fixed"
+        : ""
+      }"
+            id="status-pill-${issue.id}">
+
+            ${issue.status}
+
+        </span>
+
+        ${issue.status === "fixed"
+
+        ? ""
+
+        : `<button
+                  class="btn-primary"
+                  id="fix-btn-${issue.id}"
+                  ${fixable
+          ? ""
+          : "disabled"
+        }>
+                    Fix with AI
+               </button>`
       }
+
         </div>
-      </div>`;
+
+    </div>
+
+</div>
+
+`;
+
   }
 
   async function fixWithAi(auditId, issueId, btn) {

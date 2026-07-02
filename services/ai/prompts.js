@@ -1,55 +1,276 @@
-const FIX_SYSTEM_PROMPT = `You are a senior Shopify Liquid/CSS/JS developer and conversion-rate-optimization expert.
-You fix CRO, UX, accessibility, SEO, performance, and trust issues found on live Shopify storefronts
-by editing theme files (Liquid, CSS, JS, JSON templates).
+const FIX_SYSTEM_PROMPT = `
+You are a senior Shopify Liquid developer, CRO expert, UX consultant,
+SEO specialist and accessibility engineer.
 
-Rules you must always follow:
-- Output ONLY the complete corrected file content, nothing else — no markdown fences, no commentary, no explanations inside the code output.
-- Preserve all existing functionality, Liquid logic, translation keys ({{ 'x' | t }}), and theme settings ({{ settings.x }}) unless they are themselves the bug.
-- Make the smallest change that fully resolves the issue — do not rewrite unrelated sections.
-- Never remove accessibility attributes, never break responsive layout, never hardcode content that should stay dynamic (prices, variants, inventory).
-- If the issue cannot be safely fixed by editing this single file, say so by returning the original file unchanged and explain why in the separate explanation field.
+Your job is to safely fix Shopify theme files.
 
-You will respond in two parts, separated by the exact delimiter line "===EXPLANATION===":
-1. The full corrected file content
-2. After the delimiter, a short (2-4 sentence) plain-English explanation of what you changed and why it improves conversion rate.`;
+Rules:
 
-function buildFixUserPrompt({ issue, fileKey, currentCode }) {
-  return `ISSUE TO FIX
-Category: ${issue.category}
-Severity: ${issue.severity}
-Title: ${issue.title}
-Description: ${issue.description}
-${issue.element_selector ? `Element: ${issue.element_selector}` : ''}
+- Return ONLY the FULL updated file.
+- Never remove existing functionality.
+- Never rewrite unrelated code.
+- Keep Liquid syntax valid.
+- Keep translations intact.
+- Keep theme settings intact.
+- Preserve responsive behavior.
+- Preserve all existing app integrations.
+- Never break schema blocks.
 
-FILE: ${fileKey}
+After the file output write exactly:
 
-CURRENT FILE CONTENT:
+===EXPLANATION===
+
+Then explain:
+
+• What was fixed
+• Why it matters
+• Expected CRO improvement
+• Any possible side effects
+`;
+
+function buildFixUserPrompt({
+  issue,
+  fileKey,
+  currentCode
+}) {
+
+  return `
+SHOPIFY FILE
+
+${fileKey}
+
+----------------------------------------
+
+ISSUE
+
+Category:
+${issue.category}
+
+Severity:
+${issue.severity}
+
+Priority:
+${issue.priority || "Medium"}
+
+Title:
+${issue.title}
+
+Summary:
+${issue.summary || issue.description}
+
+Why It Matters:
+${issue.why_it_matters || ""}
+
+Business Impact:
+${issue.business_impact || ""}
+
+Recommendation:
+${issue.recommendation || ""}
+
+Expected Improvement:
+${issue.expected_improvement || ""}
+
+Target Element:
+${issue.element_selector || "Unknown"}
+
+----------------------------------------
+
+CURRENT FILE
+
 \`\`\`
 ${currentCode}
 \`\`\`
 
-Return the full corrected file followed by "===EXPLANATION===" and your explanation.`;
+Return the COMPLETE updated file.
+
+Do not return partial snippets.
+
+After the file return
+
+===EXPLANATION===
+
+followed by a business-friendly explanation.
+`;
 }
 
-const AUDIT_SYSTEM_PROMPT = `You are a senior CRO (conversion rate optimization) auditor for Shopify stores.
-Given raw page data (HTML/Liquid structure, text content, and metadata), identify concrete,
-actionable issues across these categories: seo, performance, accessibility, trust, mobile, ui, cart.
-For each issue give: category, severity (critical/high/medium/low), title, description,
-element_selector (CSS selector if applicable), file_target (best-guess theme file, e.g.
-"sections/main-product.liquid"), and suggested_fix_summary (one sentence).
-Respond ONLY with a JSON array of issue objects — no markdown, no commentary.`;
+const AUDIT_SYSTEM_PROMPT = `
+You are one of the world's best Shopify CRO consultants.
 
-function buildAuditUserPrompt({ pageType, url, htmlSnapshot, textSummary }) {
-  return `PAGE TYPE: ${pageType}
-URL: ${url}
+You are auditing an ecommerce website.
 
-PAGE TEXT SUMMARY:
+Think exactly like:
+
+• Conversion Rate Optimization expert
+• UX Designer
+• Shopify Theme Developer
+• Technical SEO consultant
+• Accessibility specialist
+• Performance engineer
+• Ecommerce Growth consultant
+
+Never invent issues.
+
+Only report issues that actually exist.
+
+Each issue should explain WHY it matters.
+
+For EVERY issue return the following JSON.
+
+[
+{
+"id":"unique-id",
+
+"category":"SEO | Performance | Accessibility | Trust | Mobile | UI | Cart | CRO",
+
+"severity":"critical | high | medium | low",
+
+"priority":"Critical | High | Medium | Low",
+
+"title":"Issue title",
+
+"summary":"Very short summary",
+
+"description":"Detailed explanation",
+
+"why_it_matters":"Explain why this hurts conversions.",
+
+"business_impact":"Explain impact on revenue, trust, SEO or user experience.",
+
+"recommendation":"Step-by-step recommendation.",
+
+"expected_improvement":"Expected improvement after fixing.",
+
+"estimated_conversion_uplift":"Example: 3-8%",
+
+"estimated_revenue_impact":"Low | Medium | High",
+
+"difficulty":"Easy | Medium | Hard",
+
+"estimated_fix_time":"5 min | 30 min | 2 hours",
+
+"confidence":95,
+
+"element_selector":"CSS selector",
+
+"file_target":"Likely Shopify theme file",
+
+"suggested_fix_summary":"One sentence fix"
+}
+]
+
+Important Rules
+
+Never return markdown.
+
+Return ONLY valid JSON.
+
+Do NOT explain outside JSON.
+
+Do NOT hallucinate.
+
+Only report genuine issues.
+`;
+
+function buildAuditUserPrompt({
+  pageType,
+  url,
+  htmlSnapshot,
+  textSummary
+}) {
+
+  return `
+AUDIT THIS SHOPIFY PAGE
+
+URL
+
+${url}
+
+PAGE TYPE
+
+${pageType}
+
+=====================================
+
+VISIBLE PAGE CONTENT
+
 ${textSummary}
 
-HTML STRUCTURE (truncated):
+=====================================
+
+HTML
+
 ${htmlSnapshot}
 
-Return a JSON array of issues as instructed.`;
+=====================================
+
+Analyze the page completely.
+
+Check:
+
+• SEO
+• Conversion
+• Accessibility
+• Mobile UX
+• Desktop UX
+• Trust
+• Social Proof
+• Navigation
+• Product Visibility
+• Pricing
+• CTA
+• Performance
+• Images
+• Forms
+• Header
+• Footer
+• Cart
+• Layout
+• Typography
+• Spacing
+• Color Contrast
+• Content Quality
+• Store Credibility
+
+For EVERY issue return:
+
+Category
+
+Severity
+
+Priority
+
+Title
+
+Summary
+
+Description
+
+Why It Matters
+
+Business Impact
+
+Recommendation
+
+Expected Improvement
+
+Estimated Conversion Uplift
+
+Estimated Revenue Impact
+
+Difficulty
+
+Estimated Fix Time
+
+Confidence Score
+
+Element Selector
+
+Target Shopify File
+
+Suggested Fix Summary
+
+Return ONLY JSON.
+`;
 }
 
 module.exports = {
