@@ -196,22 +196,7 @@
                 ${severity.toUpperCase()}
             </span>
 
-            <span class="priority-tag">
-                ${priority}
-            </span>
-
         </div>
-
-        <div>
-
-            <span class="confidence-pill">
-
-                ${confidence}% Confidence
-
-            </span>
-
-        </div>
-
     </div>
 
     <h3 class="issue-title">
@@ -307,14 +292,6 @@
 
     <div class="issue-footer">
 
-    <span class="issue-meta">
-        ${escapeHtml(issue.category)}
-        ${issue.file_target
-        ? " • " + escapeHtml(issue.file_target)
-        : ""
-      }
-    </span>
-
     <div class="issue-actions">
         <button
           class="issue-toggle"
@@ -325,17 +302,6 @@
           <span class="toggle-icon">▼</span>
 
       </button>
-
-        <span
-            class="status-pill ${issue.status === "fixed"
-        ? "fixed"
-        : ""
-      }"
-            id="status-pill-${issue.id}">
-
-            ${issue.status}
-
-        </span>
 
         ${issue.status === "fixed"
         ? ""
